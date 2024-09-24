@@ -226,7 +226,7 @@ void EnemyStateAttack::Update()
 	{
 		m_isAttackEndStanAnim = true;
 		m_isAttackEnd = true;
-		m_pEnemy->SetAttackEndAnim(attackData[m_attackId].actionTotalTime - attackData[m_attackId].attackEndTime);
+		m_pEnemy->SetAttackEndAnim(static_cast<float>(attackData[m_attackId].actionTotalTime - attackData[m_attackId].attackEndTime));
 	}
 	//s“®‘S‘Ì‚ÌŽžŠÔ‚ªI‚í‚Á‚½‚ç
 	if (m_attackTime > attackData[m_attackId].actionTotalTime)

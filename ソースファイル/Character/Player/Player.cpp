@@ -21,6 +21,8 @@ namespace
 	constexpr int kTriggerReaction = 200;
 	//初期回転度
 	constexpr int kInitRota = 10;
+	//受けるダメージの最低値
+	constexpr int kMinDamage = 3;
 	//モデルの拡大率
 	constexpr float kModelScale = 0.03f;
 }
@@ -211,10 +213,10 @@ void Player::OnCollide(std::shared_ptr<Collidable> collider)
 	if (collider->GetTag() == ObjectTag::kEnemyAttack)
 	{
 		auto attack = std::dynamic_pointer_cast<AttackBase>(collider);
-		int damage = m_pState->OnDamage(collider) - GetRand(m_status.def);
+		int damage = static_cast<int>(m_pState->OnDamage(collider) - GetRand(m_status.def));
 		if (damage < 0)
 		{
-			damage = 2;
+			damage = kMinDamage;
 		}
 
 		m_nowHp -= damage;
@@ -225,12 +227,6 @@ void Player::OnCollide(std::shared_ptr<Collidable> collider)
 		//UIに受けたダメージを送る
 		m_pUi->AddShowDamage(m_rigidbody.GetPos(), damage, true);
 	}
-	//else if (collider->GetTag() == ObjectTag::kStage)
-	//{
-	//	int playEffect = PlayEffekseer3DEffect(GetEffekseerData("stageHit").first);
-	//	MyEngine::Vector3 pos = collider->m_rigidbody.GetPos();
-	//	SetPosPlayingEffekseer3DEffect(playEffect,);
-	//}
 }
 
 std::map<std::string, Ui::SpecialAttackCommandInfo> Player::GetSetSpecialAttackInfo()

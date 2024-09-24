@@ -16,11 +16,10 @@ namespace
 	constexpr int kHealStanPointTime = 200;
 	//コンボがつながらなくなるまでの時間
 	constexpr int kComboTime = 180;
-	//エネミーの体力
-	constexpr int kEnemyHp = 50000;
-	//エネミーの攻撃力
-	constexpr int kEnemyAtk = 150;
-
+	//受けるダメージの最低値
+	constexpr int kMinDamage = 3;
+	//エネミーのモデルのスケール
+	constexpr int kModelScale = 3;
 }
 Enemy::Enemy() :
 	CharacterBase("data/model/Enemy.mv1", ObjectTag::kEnemy),
@@ -28,8 +27,6 @@ Enemy::Enemy() :
 	m_lastHitDamageTime(0),
 	m_comboCount(0)
 {
-	//m_status.hp = kEnemyHp;
-	//m_status.atk = kEnemyAtk;
 }
 
 Enemy::~Enemy()
@@ -41,7 +38,7 @@ void Enemy::Init(std::shared_ptr<Physics> physics)
 {
 	ChangeAnim("Idle");
 
-	MV1SetScale(m_modelHandle, VGet(3, 3, 3));
+	MV1SetScale(m_modelHandle, VGet(kModelScale, kModelScale, kModelScale));
 	Collidable::Init(physics);
 	auto colData = std::dynamic_pointer_cast<CapsuleColliderData>(m_pColData);
 	colData->m_radius = kColScale;
@@ -142,9 +139,9 @@ void Enemy::OnCollide(std::shared_ptr<Collidable> collider)
 	{
 		auto attack = std::dynamic_pointer_cast<AttackBase>(collider);
 		int damage = m_pState->OnDamage(attack);
-		if (damage < 0)
+		if (damage < kMinDamage)
 		{
-			damage = 2;
+			damage = kMinDamage;
 		}
 		m_nowHp -= damage;
 		if (m_nowHp < 0)

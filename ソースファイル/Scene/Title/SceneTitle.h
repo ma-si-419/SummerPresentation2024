@@ -5,19 +5,19 @@
 class TitleCamera;
 class SceneTitle : public SceneBase
 {
-private:
+public:
 	enum class ItemKind
 	{
 		kStart,
-		//kOption,
-		kEnd
+		kEnd,
+		kItemKindNum
 	};
-	enum class OptionKind
+	enum class EndKind
 	{
-		kSE,
-		kBGM,
-		kWindowSize,
-		kKindNum
+		kConfirmation,
+		kEnd,
+		kBack,
+		kEndKindNum
 	};
 public:
 	SceneTitle(SceneManager& sceneManager, DataManager& dataManager, SoundManager& soundManager);
@@ -49,8 +49,6 @@ private:
 	bool m_isOpenOption;
 	//エンドウィンドウを開いているか
 	bool m_isOpenEndWindow;
-	//本当にゲームを終わるかどうかの確認
-	bool m_isEnd;
 	//スカイドームのモデルハンドル
 	int m_domeHandle;
 	//プレイヤーのモデルハンドル

@@ -50,15 +50,15 @@ namespace
 	constexpr float kDamageVanishTime = 5;
 	//ダメージを表示する座標を少しずらす
 	constexpr int kDamageShowPosShakeScale = 80;
-	constexpr int kDamageShowPosShakeScaleHalf = kDamageShowPosShakeScale * 0.5;
+	constexpr int kDamageShowPosShakeScaleHalf = static_cast<int>(kDamageShowPosShakeScale * 0.5);
 	constexpr int kDamageShowPosShiftY = -50;
 	//矢印を揺らす大きさ
 	constexpr float kShakeArrowScale = 10.0f;
 	//矢印を揺らすスピード
 	constexpr float kShakeArrowSpeed = 0.5f;
 	//ゲームオーバーの文字を表示する座標
-	constexpr float kGameOverStringPosX[2] = { 637,660 };
-	constexpr float kGameOverStringPosY[2] = { 490,650 };
+	constexpr int kGameOverStringPosX[2] = { 637,660 };
+	constexpr int kGameOverStringPosY[2] = { 490,650 };
 	//ゲームオーバーの文字の大きさ
 	constexpr int kGameOverFontSize = 96;
 	//矢印と文字の距離
@@ -78,7 +78,7 @@ namespace
 	//バトル開始時のfightを揺らす大きさ
 	constexpr int kFightShakeScale = 20;
 	//バトル開始時のfightを揺らす大きさの半分
-	constexpr int kFightShakeScaleHalf = kFightShakeScale * 0.5;
+	constexpr int kFightShakeScaleHalf = static_cast<int>(kFightShakeScale * 0.5);
 	//バトル開始時のfightの拡大率のサイズ変更スピード
 	constexpr float kFightExRateChangeSpeed = 0.3f;
 	//バトル開始時のfightの初期アルファ値
@@ -162,7 +162,26 @@ namespace
 	constexpr float kParticleGravity = 0.05f;
 	//パーティクルのライフタイム
 	constexpr int kParticleLifeTime = 300;
-
+	//ゲームオーバー時の背景に表示する黒い矩形のアルファ値
+	constexpr int kGameOverBackGroundAlpha = 128;
+	//HPバーを表示する色
+	const int kHpBarColor = GetColor(64, 255, 64);
+	//MPバーを表示する色
+	const int kMpBarColor = GetColor(160, 192, 255);
+	//スタンバーを表示する色
+	const int kStanBarColor = GetColor(192, 32, 192);
+	//HPが減った分だけ上にかぶせるバーの色
+	const int kHpDecreasedBoxColor = GetColor(64, 64, 64);
+	//赤
+	const int kRedColor = GetColor(255, 0, 0);
+	//白
+	const int kWhiteColor = GetColor(255,255,255);
+	//黒
+	const int kBlackColor = GetColor(0,0,0);
+	//ダメージを受けた時のUIの色
+	const int kDamageFontColor = GetColor(200, 0, 0);
+	//コンボ数を表示するときの色
+	const int kComboFontColor = GetColor(255, 255, 128);
 }
 
 Ui::Ui() :
@@ -349,19 +368,19 @@ void Ui::DrawStateBar(std::shared_ptr<Player> player, std::shared_ptr<Enemy> ene
 	//プレイヤーのHPバー表示
 	DrawBox(static_cast<int>(playerHpBarStartPos.x), static_cast<int>(playerHpBarStartPos.y),
 		static_cast<int>(playerHpBarEndPos.x), static_cast<int>(playerHpBarEndPos.y),
-		GetColor(64, 255, 64), true);
+		kHpBarColor, true);
 	//プレイヤーのMPバー表示
 	DrawBox(static_cast<int>(playerMpBarStartPos.x), static_cast<int>(playerMpBarStartPos.y),
 		static_cast<int>(playerMpBarEndPos.x), static_cast<int>(playerMpBarEndPos.y),
-		GetColor(160, 192, 255), true);
+		kMpBarColor, true);
 	//エネミーのHPバーの表示
 	DrawBox(static_cast<int>(enemyHpBarStartPos.x), static_cast<int>(enemyHpBarStartPos.y),
 		static_cast<int>(enemyHpBarEndPos.x), static_cast<int>(enemyHpBarEndPos.y),
-		GetColor(64, 255, 64), true);
+		kHpBarColor, true);
 	//エネミーのスタンバー表示
 	DrawBox(static_cast<int>(enemyStanBarStartPos.x), static_cast<int>(enemyStanBarStartPos.y),
 		static_cast<int>(enemyStanBarEndPos.x), static_cast<int>(enemyStanBarEndPos.y),
-		GetColor(192, 32, 192), true);
+		kStanBarColor, true);
 
 
 	//体力に応じて上にかぶせるボックスの長さを変化させる
@@ -377,21 +396,21 @@ void Ui::DrawStateBar(std::shared_ptr<Player> player, std::shared_ptr<Enemy> ene
 	//プレイヤーのHPバーの上にかぶせるボックス表示
 	DrawBox(playerLostHpBoxPosX, static_cast<int>(playerHpBarStartPos.y),
 		static_cast<int>(playerHpBarEndPos.x), static_cast<int>(playerHpBarEndPos.y),
-		GetColor(64, 64, 64), true);
+		kHpDecreasedBoxColor, true);
 	//エネミーのHPバーの上にかぶせるボックス表示
 	DrawBox(enemyLostHpBoxPosX, static_cast<int>(enemyHpBarStartPos.y),
 		static_cast<int>(enemyHpBarEndPos.x), static_cast<int>(enemyHpBarEndPos.y),
-		GetColor(64, 64, 64), true);
+		kHpDecreasedBoxColor, true);
 
 	//プレイヤーのMPバーの上にかぶせるボックス表示
 	DrawBox(playerLostMpBoxPosX, static_cast<int>(playerMpBarStartPos.y),
 		static_cast<int>(playerMpBarEndPos.x), static_cast<int>(playerMpBarEndPos.y),
-		GetColor(64, 64, 64), true);
+		kHpDecreasedBoxColor, true);
 
 	//エネミーのスタンバーの上にかぶせるボックスを表示
 	DrawBox(enemyLostStanBoxPosX, static_cast<int>(enemyStanBarStartPos.y),
 		static_cast<int>(enemyStanBarEndPos.x), static_cast<int>(enemyStanBarEndPos.y),
-		GetColor(64, 64, 64), true);
+		kHpDecreasedBoxColor, true);
 
 	//赤いバーの初期化
 	if (m_lastPlayerHpBarEndPosX == 0 && m_lastEnemyHpBarEndPosX == 0)
@@ -407,11 +426,11 @@ void Ui::DrawStateBar(std::shared_ptr<Player> player, std::shared_ptr<Enemy> ene
 	//プレイヤーの体力が減った分を表す赤いバーを表示
 	DrawBox(playerLostHpBoxPosX, static_cast<int>(playerHpBarStartPos.y),
 		m_lastPlayerHpBarEndPosX, static_cast<int>(playerHpBarEndPos.y),
-		GetColor(255, 0, 0), true);
+		kRedColor, true);
 	//エネミーの体力が減った分を表す赤いバーを表示
 	DrawBox(enemyLostHpBoxPosX, static_cast<int>(enemyHpBarStartPos.y),
 		m_lastEnemyHpBarEndPosX, static_cast<int>(enemyHpBarEndPos.y),
-		GetColor(255, 0, 0), true);
+		kRedColor, true);
 
 	//赤いゲージが表示されて、一定時間ダメージを受けなかったら
 	//プレイヤー側の処理
@@ -453,17 +472,17 @@ void Ui::DrawStateBar(std::shared_ptr<Player> player, std::shared_ptr<Enemy> ene
 	//プレイヤーの体力値表示
 	DrawStringToHandle(static_cast<int>(m_showUi[playerStateBar].drawPos.x + playerStateBarShakeSize.x + kHpNumPosX),
 		static_cast<int>(m_showUi[playerStateBar].drawPos.y + playerStateBarShakeSize.y + kHpNumPosY),
-		playerHp.c_str(), GetColor(255, 255, 255), m_hpNumFontHandle);
+		playerHp.c_str(), kWhiteColor, m_hpNumFontHandle);
 	//エネミーの体力値表示
 	DrawStringToHandle(static_cast<int>(m_showUi[enemyStateBar].drawPos.x + enemyStateBarShakeSize.x + kHpNumPosX),
 		static_cast<int>(m_showUi[enemyStateBar].drawPos.y + enemyStateBarShakeSize.y + kHpNumPosY),
-		enemyHp.c_str(), GetColor(255, 255, 255), m_hpNumFontHandle);
+		enemyHp.c_str(), kWhiteColor, m_hpNumFontHandle);
 	//プレイヤーの気力値表示
 	std::string playerMp = std::to_string(static_cast<int>(player->GetNowMp()));
 
 	DrawStringToHandle(static_cast<int>(m_showUi[playerStateBar].drawPos.x + playerStateBarShakeSize.x + kMpNumPosX),
 		static_cast<int>(m_showUi[playerStateBar].drawPos.y + playerStateBarShakeSize.y + kMpNumPosY),
-		playerMp.c_str(), GetColor(255, 255, 255), m_mpNumFontHandle);
+		playerMp.c_str(), kWhiteColor, m_mpNumFontHandle);
 }
 
 
@@ -544,17 +563,17 @@ void Ui::DrawDamage()
 		else
 		{
 			//残り時間からアルファ値を計算する
-			alpha = 255 / kDamageVanishTime * item.time;
+			alpha = static_cast <int>(255 / kDamageVanishTime * item.time);
 		}
 		//文字列の長さを取得
 		int length = GetStringLength(item.damage.c_str());
-		//表示座標をずらす
-		int shiftSize = length * kDamageFontSize * 0.5;
+		//文字列を中央ぞろえにする
+		int shiftSize = static_cast<int>(length * kDamageFontSize * 0.5);
 		//ブレンドモードを変更
 		SetDrawBlendMode(DX_BLENDMODE_ALPHA, alpha);
 		//ダメージの表示
 		DrawFormatStringToHandle(static_cast<int>(item.pos.x - shiftSize), static_cast<int>(item.pos.y + kDamageShowPosShiftY),
-			GetColor(255, 255, 255), m_damageFontHandle, item.damage.c_str());
+			kWhiteColor, m_damageFontHandle, item.damage.c_str());
 		//ブレンドモードを元に戻す
 		SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
 		//表示時間を減らす
@@ -574,17 +593,17 @@ void Ui::DrawDamage()
 		else
 		{
 			//残り時間からアルファ値を計算する
-			alpha = 255 / kDamageVanishTime * item.time;
+			alpha = static_cast <int>(255 / kDamageVanishTime * item.time);
 		}
 		//文字列の長さを取得
 		int length = GetStringLength(item.damage.c_str());
-		//表示座標をずらす
-		int shiftSize = length * kDamageFontSize * 0.5;
+		//文字列を中央ぞろえにする
+		int shiftSize = static_cast<int>(length * kDamageFontSize * 0.5);
 		//ブレンドモードを変更
 		SetDrawBlendMode(DX_BLENDMODE_ALPHA, alpha);
 		//ダメージの表示
 		DrawFormatStringToHandle(static_cast<int>(item.pos.x - shiftSize), static_cast<int>(item.pos.y + kDamageShowPosShiftY),
-			GetColor(200, 0, 0), m_damageFontHandle, item.damage.c_str());
+			kDamageFontColor, m_damageFontHandle, item.damage.c_str());
 		//ブレンドモードを元に戻す
 		SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
 		//表示時間を減らす
@@ -595,16 +614,16 @@ void Ui::DrawDamage()
 void Ui::DrawGameOver(int arrowPos)
 {
 	//後ろのバトルシーンを暗くする
-	SetDrawBlendMode(DX_BLENDMODE_ALPHA, 128);
-	DrawBox(0, 0, Game::kWindowWidth, Game::kWindowHeight, GetColor(0, 0, 0), true);
+	SetDrawBlendMode(DX_BLENDMODE_ALPHA, kGameOverBackGroundAlpha);
+	DrawBox(0, 0, Game::kWindowWidth, Game::kWindowHeight, kBlackColor, true);
 	SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
 	//ゲームオーバーの画像データ
 	std::string logo = "GameOverLogo";
 	DrawGraph(static_cast<int>(m_showUi[logo].drawPos.x), static_cast<int>(m_showUi[logo].drawPos.y),
 		m_showUi[logo].handle, true);
 
-	DrawStringToHandle(kGameOverStringPosX[static_cast<int>(GameOverItem::kRetry)], kGameOverStringPosY[static_cast<int>(GameOverItem::kRetry)], "リトライ", GetColor(0, 0, 0), m_gameOverFontHandle, GetColor(255, 255, 255));
-	DrawStringToHandle(kGameOverStringPosX[static_cast<int>(GameOverItem::kEnd)], kGameOverStringPosY[static_cast<int>(GameOverItem::kEnd)], "やめる", GetColor(0, 0, 0), m_gameOverFontHandle, GetColor(255, 255, 255));
+	DrawStringToHandle(kGameOverStringPosX[static_cast<int>(GameOverItem::kRetry)], kGameOverStringPosY[static_cast<int>(GameOverItem::kRetry)], "リトライ", kBlackColor, m_gameOverFontHandle, kWhiteColor);
+	DrawStringToHandle(kGameOverStringPosX[static_cast<int>(GameOverItem::kEnd)], kGameOverStringPosY[static_cast<int>(GameOverItem::kEnd)], "やめる", kBlackColor, m_gameOverFontHandle, kWhiteColor);
 
 	m_shakeArrowNum += kShakeArrowSpeed;
 
@@ -612,12 +631,12 @@ void Ui::DrawGameOver(int arrowPos)
 	if (arrowPos == 0)
 	{
 		MyEngine::Vector2 pos(static_cast<int>(kGameOverStringPosX[static_cast<int>(GameOverItem::kRetry)] + sinf(m_shakeArrowNum) * kShakeArrowScale - kArrowDistance), static_cast<int>(kGameOverStringPosY[static_cast<int>(GameOverItem::kRetry)]));
-		DrawStringToHandle(pos.x, pos.y, "→", GetColor(0, 0, 0), m_gameOverFontHandle, GetColor(255, 255, 255));
+		DrawStringToHandle(static_cast<int>(pos.x), static_cast<int>(pos.y), "→", kBlackColor, m_gameOverFontHandle, kWhiteColor);
 	}
 	else
 	{
 		MyEngine::Vector2 pos(static_cast<int>(kGameOverStringPosX[static_cast<int>(GameOverItem::kEnd)] + sinf(m_shakeArrowNum) * kShakeArrowScale - kArrowDistance), static_cast<int>(kGameOverStringPosY[static_cast<int>(GameOverItem::kEnd)]));
-		DrawStringToHandle(pos.x, pos.y, "→", GetColor(0, 0, 0), m_gameOverFontHandle, GetColor(255, 255, 255));
+		DrawStringToHandle(static_cast<int>(pos.x), static_cast<int>(pos.y), "→", kBlackColor, m_gameOverFontHandle, kWhiteColor);
 	}
 }
 
@@ -628,14 +647,14 @@ void Ui::DrawGameClear()
 	for (int i = 0; i < addParticleNum; i++)
 	{
 		Particle addParticle;
-		addParticle.color = GetColor(GetRand(255), GetRand(255),GetRand(255));
+		addParticle.color = GetColor(GetRand(255), GetRand(255), GetRand(255));
 		int posKind = GetRand(static_cast<int>(ParticlePos::kPosKindNum));
 		if (posKind == static_cast<int>(ParticlePos::kLeftDown))
 		{
 			addParticle.pos.x = 0;
 			addParticle.pos.y = Game::kWindowHeight;
 			//右上に行くようにベクトル作成
-			addParticle.vec = MyEngine::Vector2(1,-1);
+			addParticle.vec = MyEngine::Vector2(1, -1);
 		}
 		else if (posKind == static_cast<int>(ParticlePos::kLeftUp))
 		{
@@ -670,11 +689,11 @@ void Ui::DrawGameClear()
 	for (auto& item : m_particles)
 	{
 		//パーティクルを描画する
-		DrawCircle(item.pos.x,item.pos.y,kParticleRadius,item.color,true);
+		DrawCircle(static_cast<int>(item.pos.x), static_cast<int>(item.pos.y), kParticleRadius, item.color, true);
 		//座標の更新
 		item.pos += item.vec;
 		//ベクトルを少しずつ下向きにしていく
-		item.vec.y += kParticleGravity;	
+		item.vec.y += kParticleGravity;
 		//ライフタイムを減らしていく
 		item.lifeTime--;
 		if (item.lifeTime < 0)
@@ -687,7 +706,7 @@ void Ui::DrawGameClear()
 	{
 		m_particles.erase(m_particles.begin() + deleteItem);
 	}
-	
+
 	//KOの拡大率を調整する
 	if (m_koExRate > kFinalKoExRate)
 	{
@@ -702,7 +721,7 @@ void Ui::DrawGameClear()
 	DrawRotaGraph(static_cast<int>(m_showUi[logo].drawPos.x), static_cast<int>(m_showUi[logo].drawPos.y),
 		m_koExRate, 0.0, m_showUi[logo].handle, true);
 
-	DrawStringToHandle(kGameClearStringPosX, kGameClearStringPosY, "Press A Button", GetColor(255, 255, 255), m_gameOverFontHandle);;
+	DrawStringToHandle(kGameClearStringPosX, kGameClearStringPosY, "Press A Button", kWhiteColor, m_gameOverFontHandle);;
 
 }
 
@@ -716,7 +735,7 @@ void Ui::DrawStartSign(bool startFlag)
 	if (!startFlag)
 	{
 		//Readyと表示する
-		DrawRotaGraph(m_showUi[ready].drawPos.x, m_showUi[ready].drawPos.y, kReadyExRate, 0, m_showUi[ready].handle, true);
+		DrawRotaGraph(static_cast<int>(m_showUi[ready].drawPos.x), static_cast<int>(m_showUi[ready].drawPos.y), kReadyExRate, 0, m_showUi[ready].handle, true);
 	}
 	//バトルが開始した場合
 	else
@@ -832,7 +851,7 @@ void Ui::DrawCommand(bool showSpecialAttack, std::map<std::string, SpecialAttack
 			//0よりも小さくしない
 			m_specialCommandPosX = 0;
 		}
-		
+
 	}
 	//必殺技パレットを開いているとき
 	else
@@ -915,13 +934,13 @@ void Ui::DrawCommand(bool showSpecialAttack, std::map<std::string, SpecialAttack
 
 	//各操作の名前を表示する
 	DrawStringToHandle(m_normalCommandPosX + kCommandStringGapX, kCommandPosY[static_cast<int>(CommandSort::kPhysical)] + kCommandStringGapY,
-		"きんせつまほう", GetColor(0, 0, 0), m_commandFontHandle, GetColor(255, 255, 255));
+		"きんせつまほう", kBlackColor, m_commandFontHandle,kWhiteColor);
 	DrawStringToHandle(m_normalCommandPosX + kCommandStringGapX, kCommandPosY[static_cast<int>(CommandSort::kEnergy)] + kCommandStringGapY,
-		"まだん", GetColor(0, 0, 0), m_commandFontHandle, GetColor(255, 255, 255));
+		"まだん", kBlackColor, m_commandFontHandle, kWhiteColor);
 	DrawStringToHandle(m_normalCommandPosX + kCommandStringGapX, kCommandPosY[static_cast<int>(CommandSort::kDodge)] + kCommandStringGapY,
-		"かいひ/ダッシュ", GetColor(0, 0, 0), m_commandFontHandle, GetColor(255, 255, 255));
+		"かいひ/ダッシュ", kBlackColor, m_commandFontHandle, kWhiteColor);
 	DrawStringToHandle(m_normalCommandPosX + kCommandStringGapX, kCommandPosY[static_cast<int>(CommandSort::kCharge)] + kCommandStringGapY,
-		"チャージ", GetColor(0, 0, 0), m_commandFontHandle, GetColor(255, 255, 255));
+		"チャージ", kBlackColor, m_commandFontHandle, kWhiteColor);
 
 	SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
 
@@ -955,23 +974,23 @@ void Ui::DrawCommand(bool showSpecialAttack, std::map<std::string, SpecialAttack
 	//各操作の名前を表示する
 
 	DrawStringToHandle(m_specialCommandPosX + kCommandStringGapX, kCommandPosY[static_cast<int>(CommandSort::kSpecialA)] + kCommandStringGapY,
-		attackInfo[Game::InputId::kA].name.c_str(), GetColor(0, 0, 0), m_commandFontHandle, GetColor(255, 255, 255));
+		attackInfo[Game::InputId::kA].name.c_str(), kBlackColor, m_commandFontHandle, kWhiteColor);
 	DrawStringToHandle(m_specialCommandPosX + kCommandStringGapX, kCommandPosY[static_cast<int>(CommandSort::kSpecialB)] + kCommandStringGapY,
-		attackInfo[Game::InputId::kB].name.c_str(), GetColor(0, 0, 0), m_commandFontHandle, GetColor(255, 255, 255));
+		attackInfo[Game::InputId::kB].name.c_str(), kBlackColor, m_commandFontHandle, kWhiteColor);
 	DrawStringToHandle(m_specialCommandPosX + kCommandStringGapX, kCommandPosY[static_cast<int>(CommandSort::kSpecialX)] + kCommandStringGapY,
-		attackInfo[Game::InputId::kX].name.c_str(), GetColor(0, 0, 0), m_commandFontHandle, GetColor(255, 255, 255));
+		attackInfo[Game::InputId::kX].name.c_str(), kBlackColor, m_commandFontHandle, kWhiteColor);
 	DrawStringToHandle(m_specialCommandPosX + kCommandStringGapX, kCommandPosY[static_cast<int>(CommandSort::kSpecialY)] + kCommandStringGapY,
-		attackInfo[Game::InputId::kY].name.c_str(), GetColor(0, 0, 0), m_commandFontHandle, GetColor(255, 255, 255));
-	
+		attackInfo[Game::InputId::kY].name.c_str(), kBlackColor, m_commandFontHandle, kWhiteColor);
+
 	//各操作のコストを表示する
 	DrawStringToHandle(m_specialCommandPosX + kCostStringGapX, kCommandPosY[static_cast<int>(CommandSort::kSpecialA)] + kCostStringGapY,
-		std::to_string(attackInfo[Game::InputId::kA].cost).c_str(), GetColor(0, 0, 0), m_commandFontHandle, GetColor(255, 255, 255));
+		std::to_string(attackInfo[Game::InputId::kA].cost).c_str(), kBlackColor, m_commandFontHandle, kWhiteColor);
 	DrawStringToHandle(m_specialCommandPosX + kCostStringGapX, kCommandPosY[static_cast<int>(CommandSort::kSpecialB)] + kCostStringGapY,
-		std::to_string(attackInfo[Game::InputId::kB].cost).c_str(), GetColor(0, 0, 0), m_commandFontHandle, GetColor(255, 255, 255));
+		std::to_string(attackInfo[Game::InputId::kB].cost).c_str(), kBlackColor, m_commandFontHandle, kWhiteColor);
 	DrawStringToHandle(m_specialCommandPosX + kCostStringGapX, kCommandPosY[static_cast<int>(CommandSort::kSpecialX)] + kCostStringGapY,
-		std::to_string(attackInfo[Game::InputId::kX].cost).c_str(), GetColor(0, 0, 0), m_commandFontHandle, GetColor(255, 255, 255));
+		std::to_string(attackInfo[Game::InputId::kX].cost).c_str(), kBlackColor, m_commandFontHandle, kWhiteColor);
 	DrawStringToHandle(m_specialCommandPosX + kCostStringGapX, kCommandPosY[static_cast<int>(CommandSort::kSpecialY)] + kCostStringGapY,
-		std::to_string(attackInfo[Game::InputId::kY].cost).c_str(), GetColor(0, 0, 0), m_commandFontHandle, GetColor(255, 255, 255));
+		std::to_string(attackInfo[Game::InputId::kY].cost).c_str(), kBlackColor, m_commandFontHandle, kWhiteColor);
 
 	SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
 
@@ -981,27 +1000,27 @@ void Ui::DrawCommand(bool showSpecialAttack, std::map<std::string, SpecialAttack
 		0, kShoulderButtonGraphSize, kShoulderButtonGraphSize,
 		m_showUi[shoulderButton].handle, true);
 	DrawStringToHandle(kGuardCommandPosX + kShoulderButtonGraphGapX, kGuardCommandPosY + kShoulderButtonGraphGapY,
-		"ガード", GetColor(0, 0, 0), m_commandFontHandle, GetColor(255, 255, 255));
+		"ガード", kBlackColor, m_commandFontHandle, kWhiteColor);
 	//必殺技コマンドを表示するコマンドを表示する
 	DrawRectGraph(kSpCommandControlPosX, kSpCommandControlPosY,
 		kShoulderButtonGraphSize * static_cast<int>(ButtonSort::kLb),
 		0, kShoulderButtonGraphSize, kShoulderButtonGraphSize,
 		m_showUi[shoulderButton].handle, true);
 	DrawStringToHandle(kSpCommandControlPosX + kShoulderButtonGraphGapX, kSpCommandControlPosY + kShoulderButtonGraphGapY,
-		"Spコマンド", GetColor(0, 0, 0), m_commandFontHandle, GetColor(255, 255, 255));
+		"Spコマンド", kBlackColor, m_commandFontHandle, kWhiteColor);
 	//上下移動コマンドを表示するコマンドを表示する
 	DrawRectGraph(kUpCommandPosX, kUpCommandPosY,
 		kShoulderButtonGraphSize * static_cast<int>(ButtonSort::kLt),
 		0, kShoulderButtonGraphSize, kShoulderButtonGraphSize,
 		m_showUi[shoulderButton].handle, true);
 	DrawStringToHandle(kUpCommandPosX + kShoulderButtonGraphGapX, kUpCommandPosY + kShoulderButtonGraphGapY,
-		"アップ", GetColor(0, 0, 0), m_commandFontHandle, GetColor(255, 255, 255));
+		"アップ", kBlackColor, m_commandFontHandle, kWhiteColor);
 	DrawRectGraph(kDownCommandPosX, kDownCommandPosY,
-		kShoulderButtonGraphSize* static_cast<int>(ButtonSort::kRt),
+		kShoulderButtonGraphSize * static_cast<int>(ButtonSort::kRt),
 		0, kShoulderButtonGraphSize, kShoulderButtonGraphSize,
 		m_showUi[shoulderButton].handle, true);
 	DrawStringToHandle(kDownCommandPosX + kShoulderButtonGraphGapX, kDownCommandPosY + kShoulderButtonGraphGapY,
-		"ダウン", GetColor(0, 0, 0), m_commandFontHandle, GetColor(255, 255, 255));
+		"ダウン", kBlackColor, m_commandFontHandle, kWhiteColor);
 }
 
 void Ui::DrawComboCount()
@@ -1012,10 +1031,10 @@ void Ui::DrawComboCount()
 		//文字列を左揃えにするための処理
 		std::string comboString = std::to_string(m_comboCount);
 		//数字の文字数を取得しその分左に座標ずらす(数字は半角なのでフォントサイズに0.5をかける)
-		int length = GetStringLength(comboString.c_str()) * kComboCountFontSize * 0.5;
+		int length = static_cast<int>(GetStringLength(comboString.c_str()) * kComboCountFontSize * 0.5);
 
 		//コンボ数を表示する
-		DrawFormatStringToHandle(kComboCountDrawPosX - length, kComboCountDrawPosY, GetColor(255, 255, 128), m_comboCountFontHandle, "%dCOMBO", m_comboCount);
+		DrawFormatStringToHandle(kComboCountDrawPosX - length, kComboCountDrawPosY, kComboFontColor, m_comboCountFontHandle, "%dCOMBO", m_comboCount);
 		//表示したコンボ数を保存する
 		m_lastComboCount = m_comboCount;
 		//アルファ値を最大値にする
@@ -1085,9 +1104,9 @@ void Ui::DrawComboCount()
 		//文字列を左揃えにするための処理
 		std::string comboString = std::to_string(m_lastComboCount);
 		//数字の文字数を取得しその分左に座標ずらす(数字は半角なのでフォントサイズに0.5をかける)
-		int length = GetStringLength(comboString.c_str()) * kComboCountFontSize * 0.5;
+		int length = static_cast<int>(GetStringLength(comboString.c_str()) * kComboCountFontSize * 0.5);
 		//できたコンボ数を表示し続ける
-		DrawFormatStringToHandle(kComboCountDrawPosX - length, kComboCountDrawPosY, GetColor(255, 255, 128), m_comboCountFontHandle, "%dCOMBO", m_lastComboCount);
+		DrawFormatStringToHandle(kComboCountDrawPosX - length, kComboCountDrawPosY, kComboFontColor, m_comboCountFontHandle, "%dCOMBO", m_lastComboCount);
 		//コメントを表示する
 		DrawRotaGraph(m_comboPraiseCommentPosX, kComboPraiseCommentPosY, 1, 0, m_showUi[praiseComment].handle, true);
 		//ブレンドモードを元に戻す

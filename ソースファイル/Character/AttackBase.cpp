@@ -11,10 +11,12 @@ namespace
 	//どこから追尾するか
 	constexpr float kTrackStartPosRate = 0.3f;
 	//どのくらい弾を散らばらせるか
-	constexpr int kScatterPower = 50;
-	constexpr int kScatterPowerHalf = kScatterPower * 0.5;
+	constexpr int kScatterPower = 60;
+	constexpr int kScatterPowerHalf = static_cast<int>(kScatterPower * 0.5);
 	//レーザーのエフェクトを出す感覚
 	constexpr int kLaserEffectPopTime = 1;
+	//度数法から弧度法へ変換する値
+	constexpr float kToRadian = DX_PI_F / 180;
 }
 
 AttackBase::AttackBase(ObjectTag tag) :
@@ -84,9 +86,9 @@ void AttackBase::SetStatus(DataManager::AttackInfo status, MyEngine::Vector3 tar
 	if (status.isScatter)
 	{
 		//X軸にランダムで回転させる
-		MATRIX randomX = MGetRotX(static_cast<float>(GetRand(kScatterPower) - kScatterPowerHalf) * 0.01f);
+		MATRIX randomX = MGetRotX(static_cast<float>(GetRand(kScatterPower) - kScatterPowerHalf) * kToRadian);
 		//Y軸にランダムで回転させる
-		MATRIX randomY = MGetRotY(static_cast<float>(GetRand(kScatterPower) - kScatterPowerHalf) * 0.01f);
+		MATRIX randomY = MGetRotY(static_cast<float>(GetRand(kScatterPower) - kScatterPowerHalf) * kToRadian);
 
 		MATRIX mat = MMult(randomX, randomY);
 

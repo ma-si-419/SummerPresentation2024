@@ -46,7 +46,7 @@ int EnemyStateGuard::OnDamage(std::shared_ptr<Collidable> collider)
 	//攻撃のポインタ
 	auto attack = std::dynamic_pointer_cast<AttackBase>(collider);
 	//ダメージカットする
-	damage = (attack->GetDamage() - GetRand(static_cast<int>(m_pEnemy->GetStatus().def))) * kDamageCutRate;
+	damage =static_cast<int>((attack->GetDamage() - GetRand(static_cast<int>(m_pEnemy->GetStatus().def))) * kDamageCutRate);
 	//状態を変化させない
 	return damage;
 }

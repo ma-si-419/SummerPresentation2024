@@ -54,7 +54,7 @@ int PlayerStateGuard::OnDamage(std::shared_ptr<Collidable> collider)
 	//攻撃のポインタ
 	auto attack = std::dynamic_pointer_cast<AttackBase>(collider);
 	//ダメージをそカットして返す
-	damage = attack->GetDamage() * kDamageCutRate;
+	damage = static_cast<int>(attack->GetDamage() * kDamageCutRate);
 	m_pPlayer->PlaySE("Guard", DX_PLAYTYPE_BACK);
 
 	return damage;

@@ -18,11 +18,36 @@ namespace
 	constexpr int kPlayerAnimNumber = 20;
 	//プレイヤーのアニメーションの番号
 	constexpr int kEnemyAnimNumber = 19;
+	//スカイドームの大きさ
+	constexpr float kDomeScale = 5.0f;
+	//エネミーの大きさ
+	constexpr float kEnemyScale = 3.0f;
+	//プレイヤ－の大きさ
+	constexpr float kPlayerScale = 0.03f;
+	//矢印を文字列の横に表示するときにずらす大きさ
+	constexpr int kArrowGap = -100;
+	//何も開いていないときの文字列
+	const char* const kTitleString[static_cast<int>(SceneTitle::ItemKind::kItemKindNum)] =
+	{
+		"バトルスタート",
+		"やめる"
+	};
+	const char* const kEndString[static_cast<int>(SceneTitle::EndKind::kEndKindNum)] =
+	{
+		"ほんとうにやめる?",
+		"やめる",
+		"やめない"
+	};
+	//何も開いていないときの文字列の座標
+	constexpr int kTitleStringPosX[static_cast<int>(SceneTitle::ItemKind::kItemKindNum)] = { 500,620 };
+	constexpr int kTitleStringPosY[static_cast<int>(SceneTitle::ItemKind::kItemKindNum)] = { 500,650 };
+	//終了画面を開いているときの文字列の座標
+	constexpr int kEndStringPosX[static_cast<int>(SceneTitle::EndKind::kEndKindNum)] = {450,380,950};
+	constexpr int kEndStringPosY[static_cast<int>(SceneTitle::EndKind::kEndKindNum)] = {300,500,500};
 }
 
 SceneTitle::SceneTitle(SceneManager& sceneManager, DataManager& dataManager, SoundManager& soundManager) :
 	SceneBase(sceneManager, dataManager, soundManager),
-	m_isEnd(false),
 	m_isOpenEndWindow(false),
 	m_isOpenOption(false),
 	m_selectItem(0),
@@ -51,7 +76,7 @@ void SceneTitle::Init()
 
 	m_soundManager.SetHandle(m_dataManager.GetSoundData(Game::SceneNum::kTitle));
 
-	m_soundManager.Play("TitleBgm",DX_PLAYTYPE_LOOP);
+	m_soundManager.Play("TitleBgm", DX_PLAYTYPE_LOOP);
 
 	//Uiのロード
 	LoadUiHandle(m_dataManager.GetUiData(Game::SceneNum::kTitle));
@@ -60,12 +85,12 @@ void SceneTitle::Init()
 	MV1SetPosition(m_playerHandle, kPlayerInitPos.CastVECTOR());
 	MV1SetPosition(m_enemyHandle, kEnemyInitPos.CastVECTOR());
 	//モデルのスケール設定
-	MV1SetScale(m_domeHandle, VGet(5, 5, 5));
-	MV1SetScale(m_playerHandle, VGet(0.03, 0.03, 0.03));
-	MV1SetScale(m_enemyHandle, VGet(3, 3, 3));
+	MV1SetScale(m_domeHandle, VGet(kDomeScale, kDomeScale, kDomeScale));
+	MV1SetScale(m_playerHandle, VGet(kPlayerScale, kPlayerScale, kPlayerScale));
+	MV1SetScale(m_enemyHandle, VGet(kEnemyScale, kEnemyScale, kEnemyScale));
 	//モデルのアニメーション設定
-	MV1AttachAnim(m_playerHandle,kPlayerAnimNumber);
-	MV1AttachAnim(m_enemyHandle,kEnemyAnimNumber);
+	MV1AttachAnim(m_playerHandle, kPlayerAnimNumber);
+	MV1AttachAnim(m_enemyHandle, kEnemyAnimNumber);
 	//プレイヤーとエネミーが向き合う形にする
 	MV1SetRotationZYAxis(m_playerHandle, (kPlayerInitPos - kEnemyInitPos).CastVECTOR(), VGet(0.0f, 1.0f, 0.0f), 0.0f);
 	MV1SetRotationZYAxis(m_enemyHandle, (kEnemyInitPos - kPlayerInitPos).CastVECTOR(), VGet(0.0f, 1.0f, 0.0f), 0.0f);
@@ -112,37 +137,20 @@ void SceneTitle::Update(MyEngine::Input input)
 			m_soundManager.Play(OKSE, DX_PLAYTYPE_BACK);
 			if (m_selectItem == static_cast<int>(ItemKind::kStart))
 			{
-				//セレクトシーンに飛ぶ
-//				m_sceneManager.ChangeScene(std::make_shared<SceneSelect>(m_sceneManager, m_dataManager));
-
 				//ゲームシーンに直接飛ぶ
 				m_soundManager.Stop("TitleBgm");
 				m_sceneManager.ChangeScene(std::make_shared<SceneGame>(m_sceneManager, m_dataManager, m_soundManager));
 				return;
 			}
-			//else if (m_selectItem == static_cast<int>(ItemKind::kOption))
-			//{
-			//	//オプションウィンドウを開く
-			//	m_isOpenOption = true;
-			//}
+
 			else if (m_selectItem == static_cast<int>(ItemKind::kEnd))
 			{
 				//エンドウィンドウを開く
 				m_isOpenEndWindow = true;
-				//本当に終了するかどうかを「いいえ」に入れておく
-				m_isEnd = false;
+				m_selectItem = static_cast<int>(EndKind::kBack);
 			}
 		}
 	}
-	//オプションウィンドウを開いているとき
-	//else if (m_isOpenOption)
-	//{
-	//	//戻るボタンを押したとき
-	//	if (input.IsTrigger(Game::InputId::kCancel))
-	//	{
-	//		m_isOpenOption = false;
-	//	}
-	//}
 	//エンドウィンドウを開いているとき
 	else if (m_isOpenEndWindow)
 	{
@@ -151,12 +159,12 @@ void SceneTitle::Update(MyEngine::Input input)
 		if (input.IsTrigger(Game::InputId::kLeft))
 		{
 			m_soundManager.Play(cursorSE, DX_PLAYTYPE_BACK);
-			m_isEnd = true;
+			m_selectItem = static_cast<int>(EndKind::kEnd);
 		}
 		else if (input.IsTrigger(Game::InputId::kRight))
 		{
 			m_soundManager.Play(cursorSE, DX_PLAYTYPE_BACK);
-			m_isEnd = false;
+			m_selectItem = static_cast<int>(EndKind::kBack);
 		}
 
 		//戻るボタンを押したとき
@@ -170,7 +178,7 @@ void SceneTitle::Update(MyEngine::Input input)
 		if (input.IsTrigger(Game::InputId::kOk))
 		{
 			//本当に閉じるかどうかを確認
-			if (m_isEnd)
+			if (m_selectItem == static_cast<int>(EndKind::kEnd))
 			{
 				m_soundManager.Play(cancelSE, DX_PLAYTYPE_BACK);
 				//ゲームを終了する
@@ -195,7 +203,7 @@ void SceneTitle::Draw()
 	MV1DrawModel(m_playerHandle);
 	MV1DrawModel(m_enemyHandle);
 
-	
+
 
 	//オプションもエンドウィンドウも開いていないとき
 	bool isCloseWindow = !m_isOpenEndWindow && !m_isOpenOption;
@@ -205,33 +213,33 @@ void SceneTitle::Draw()
 	{
 		//タイトルロゴの表示
 		std::string titleLogo = "TitleLogo";
-		DrawGraph(m_showUi[titleLogo].drawPos.x, m_showUi[titleLogo].drawPos.y, m_showUi[titleLogo].handle, true);;
+		DrawGraph(static_cast<int>(m_showUi[titleLogo].drawPos.x), static_cast<int>(m_showUi[titleLogo].drawPos.y), m_showUi[titleLogo].handle, true);;
 		//文字列の表示
-		DrawStringToHandle(500, 500, "バトルスタート", GetColor(0, 0, 0), m_fontHandle, GetColor(255, 255, 255));
-		DrawStringToHandle(620, 650, "やめる", GetColor(0, 0, 0), m_fontHandle, GetColor(255, 255, 255));
+		DrawStringToHandle(kTitleStringPosX[static_cast<int>(ItemKind::kStart)], kTitleStringPosY[static_cast<int>(ItemKind::kStart)], kTitleString[static_cast<int>(ItemKind::kStart)], GetColor(0, 0, 0), m_fontHandle, GetColor(255, 255, 255));
+		DrawStringToHandle(kTitleStringPosX[static_cast<int>(ItemKind::kEnd)], kTitleStringPosY[static_cast<int>(ItemKind::kEnd)], kTitleString[static_cast<int>(ItemKind::kEnd)], GetColor(0, 0, 0), m_fontHandle, GetColor(255, 255, 255));
 		//矢印の表示
 		if (m_selectItem == static_cast<int>(ItemKind::kStart))
 		{
-			DrawStringToHandle(400 + sinf(m_shakeArrowNum) * kShakeArrowScale, 500, "→", GetColor(0, 0, 0), m_fontHandle, GetColor(255, 255, 255));
+			DrawStringToHandle(kTitleStringPosX[static_cast<int>(ItemKind::kStart)] + kArrowGap + static_cast<int>(sinf(m_shakeArrowNum) * kShakeArrowScale), kTitleStringPosY[static_cast<int>(ItemKind::kStart)], "→", GetColor(0, 0, 0), m_fontHandle, GetColor(255, 255, 255));
 		}
 		else if (m_selectItem == static_cast<int>(ItemKind::kEnd))
 		{
-			DrawStringToHandle(520 + sinf(m_shakeArrowNum) * kShakeArrowScale, 650, "→", GetColor(0, 0, 0), m_fontHandle, GetColor(255, 255, 255));
+			DrawStringToHandle(kTitleStringPosX[static_cast<int>(ItemKind::kEnd)] + kArrowGap + static_cast<int>(sinf(m_shakeArrowNum) * kShakeArrowScale), kTitleStringPosY[static_cast<int>(ItemKind::kEnd)], "→", GetColor(0, 0, 0), m_fontHandle, GetColor(255, 255, 255));
 		}
 	}
 	//エンドウィンドウを開いているとき
 	if (m_isOpenEndWindow)
 	{
-		DrawStringToHandle(450, 300, "ほんとうにやめる？", GetColor(0, 0, 0), m_fontHandle, GetColor(255, 255, 255));
-		DrawStringToHandle(380, 500, "はい", GetColor(0, 0, 0), m_fontHandle, GetColor(255, 255, 255));
-		DrawStringToHandle(950, 500, "いいえ", GetColor(0, 0, 0), m_fontHandle, GetColor(255, 255, 255));
-		if (m_isEnd)
+		DrawStringToHandle(kEndStringPosX[static_cast<int>(EndKind::kConfirmation)], kEndStringPosY[static_cast<int>(EndKind::kConfirmation)], kEndString[static_cast<int>(EndKind::kConfirmation)], GetColor(0, 0, 0), m_fontHandle, GetColor(255, 255, 255));
+		DrawStringToHandle(kEndStringPosX[static_cast<int>(EndKind::kEnd)], kEndStringPosY[static_cast<int>(EndKind::kEnd)], kEndString[static_cast<int>(EndKind::kEnd)], GetColor(0, 0, 0), m_fontHandle, GetColor(255, 255, 255));
+		DrawStringToHandle(kEndStringPosX[static_cast<int>(EndKind::kBack)], kEndStringPosY[static_cast<int>(EndKind::kBack)], kEndString[static_cast<int>(EndKind::kBack)], GetColor(0, 0, 0), m_fontHandle, GetColor(255, 255, 255));
+		if (m_selectItem == static_cast<int>(EndKind::kEnd))
 		{
-			DrawStringToHandle(280 + sinf(m_shakeArrowNum) * kShakeArrowScale, 500, "→", GetColor(0, 0, 0), m_fontHandle, GetColor(255, 255, 255));
+			DrawStringToHandle(kEndStringPosX[static_cast<int>(EndKind::kEnd)] + kArrowGap + static_cast<int>(sinf(m_shakeArrowNum) * kShakeArrowScale), kEndStringPosY[static_cast<int>(EndKind::kEnd)], "→", GetColor(0, 0, 0), m_fontHandle, GetColor(255, 255, 255));
 		}
 		else
 		{
-			DrawStringToHandle(850 + sinf(m_shakeArrowNum) * kShakeArrowScale, 500, "→", GetColor(0, 0, 0), m_fontHandle, GetColor(255, 255, 255));
+			DrawStringToHandle(kEndStringPosX[static_cast<int>(EndKind::kBack)] + kArrowGap + static_cast<int>(sinf(m_shakeArrowNum) * kShakeArrowScale), kEndStringPosY[static_cast<int>(EndKind::kBack)], "→", GetColor(0, 0, 0), m_fontHandle, GetColor(255, 255, 255));
 		}
 	}
 }

@@ -9,6 +9,10 @@
 #include "Input.h"
 #include "Game.h"
 #include <cassert>
+namespace
+{
+	constexpr int kParticleMax = 16000;
+}
 
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow)
 {
@@ -36,7 +40,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	}
 
 	SetUseDirect3DVersion(DX_DIRECT3D_11);
-	Effekseer_Init(16000);
+	Effekseer_Init(kParticleMax);
 	//Effekseer_InitDistortion();
 	Effekseer_SetGraphicsDeviceLostCallbackFunctions();
 	Effekseer_Sync3DSetting();

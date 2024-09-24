@@ -138,7 +138,10 @@ void Physics::FixPosition()
 
 		//TODO:ステージの当たり判定を作成する
 		//移動制限を付ける(仮処理)
-		if ((nextPos - centerPos).Length() > 500)
+		const float stageScale = 500.0f;
+		const float groundHeight = -50.0f;
+
+		if ((nextPos - centerPos).Length() > stageScale)
 		{
 			//ぶつかった場所を保存する
 			OnCollideInfo hitCollides;
@@ -151,11 +154,11 @@ void Physics::FixPosition()
 			//ぶつかった時の処理を呼ぶ
 			hitCollides.OnCollide();
 			//座標を補正
-			nextPos = (nextPos - centerPos).Normalize() * 500;
+			nextPos = (nextPos - centerPos).Normalize() * stageScale;
 		}
-		if(nextPos.y < -50)
+		if(nextPos.y < groundHeight)
 		{
-			nextPos.y = -50;
+			nextPos.y = groundHeight;
 		}
 
 		item->m_rigidbody.SetVelo(toFixedPos);

@@ -54,7 +54,7 @@ void PlayerStateAttack::Init(std::string button, bool isSpecial)
 	//アニメーションを変更
 	m_pPlayer->ChangeAnim(m_pPlayer->GetAttackData(m_attackId).animationName);
 	//プレイヤーのMPを減らす
-	m_pPlayer->SubMp(m_pPlayer->GetAttackData(m_attackId).cost);
+	m_pPlayer->SubMp(static_cast<float>(m_pPlayer->GetAttackData(m_attackId).cost));
 }
 
 void PlayerStateAttack::Update(MyEngine::Input input)
@@ -303,7 +303,7 @@ void PlayerStateAttack::Update(MyEngine::Input input)
 				if (m_pPlayer->GetAttackCost(m_nextAttackId) < m_pPlayer->GetNowMp())
 				{
 					//MPを減らす
-					m_pPlayer->SubMp(m_pPlayer->GetAttackCost(m_nextAttackId));
+					m_pPlayer->SubMp(static_cast<float>(m_pPlayer->GetAttackCost(m_nextAttackId)));
 					//次の攻撃に移行する
 					m_attackId = m_nextAttackId;
 					//攻撃の情報を初期化する

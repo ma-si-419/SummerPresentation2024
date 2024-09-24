@@ -52,8 +52,6 @@ public:
 	void SetTargetPos(MyEngine::Vector3 pos);
 	//攻撃の情報を設定する
 	void SetAttackData(std::map<std::string, DataManager::AttackInfo> data) { m_attackData = data; }
-	//動けない時間を設定する
-	void SetStanTime(int time) { m_stanTime = time; }
 	//攻撃に必要な気力量を取得する
 	int GetAttackCost(std::string Id) { return m_attackData[Id].cost; }
 	//アニメーションのデータを取得する
@@ -68,8 +66,6 @@ public:
 	std::shared_ptr<EffekseerData> GetEffectData() { return m_pEffectData; }
 	//自分についてくるエフェクトの再生を止める
 	void EndEffect();
-	//必殺技を出している状態に変化させる
-	void PlaySpecialAttack(std::string id);
 	//向く方向を設定する
 	void SetModelFront(MyEngine::Vector3 pos);
 	//アニメーションを変更する
@@ -121,12 +117,6 @@ protected:
 	float m_nowHp;
 	//現在の気力
 	float m_nowMp;
-	//動けない時間
-	int m_stanTime;
-	//攻撃を出しているかどうか
-	bool m_isAttack;
-	//ターゲットが近くにいるかどうか
-	bool m_isNearTarget;
 	//今再生しているアニメーション
 	int m_playAnim;
 	//アニメーションの再生速度
@@ -147,16 +137,4 @@ protected:
 	MyEngine::Vector3 m_attackTarget;
 	//ロックオンしている相手の座標
 	MyEngine::Vector3 m_targetPos;
-	/// <summary>
-	/// 攻撃を作成する
-	/// </summary>
-	/// <param name="id">攻撃のID</param>
-	/// <returns>攻撃のポインタ</returns>
-	std::shared_ptr<AttackBase> CreateAttack(std::shared_ptr<Physics> physics, std::string id, bool isPlayer);
-
-
-
-
-	//通常攻撃を出してる状態に変化させる
-	void SetNormalAttack(bool isPhysical, int time);
 };

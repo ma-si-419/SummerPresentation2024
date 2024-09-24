@@ -23,7 +23,7 @@ private:
 	//経過時間
 	int m_time = 0;
 	//受けた攻撃の種類
-	HitEffect m_effect;
+	HitEffect m_effect = HitEffect::kLightHit;
 	
 	//ノックバックの方向
 	MyEngine::Vector3 m_burstDir;

@@ -162,6 +162,8 @@ std::vector<DataManager::UiInfo> DataManager::GetUiData(Game::SceneNum sceneNum)
 	{
 		//‚Ç‚ê‚É‚à“–‚Ä‚Í‚Ü‚ç‚È‚©‚Á‚½‚çƒGƒ‰[
 		assert(false);
+		std::vector<DataManager::UiInfo> empty;
+		return empty;
 	}
 	std::vector<DataManager::UiInfo> empty;
 	return empty;

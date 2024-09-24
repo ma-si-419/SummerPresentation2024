@@ -23,6 +23,8 @@ namespace
 	//クリア時のエフェクトの座標の範囲
 	constexpr int kClearEffectPopRange = 20;
 	constexpr int kClearEffectPopRangeHalf = 10;
+	//音楽が変わる体力の割合
+	constexpr float kMusicChangeHpRate = 0.3f;
 }
 
 SceneGame::SceneGame(SceneManager& sceneManager, DataManager& dataManager, SoundManager& soundManager) :
@@ -307,8 +309,9 @@ void SceneGame::Update(MyEngine::Input input)
 		}
 
 	}
-	if (m_pEnemy->GetNowHp() < m_pEnemy->GetStatus().hp / 2 ||
-		m_pPlayer->GetNowHp() < m_pPlayer->GetStatus().hp / 2)
+	//体力が一定量以下になったら音楽を変える
+	if (m_pEnemy->GetNowHp() < m_pEnemy->GetStatus().hp * kMusicChangeHpRate ||
+		m_pPlayer->GetNowHp() < m_pPlayer->GetStatus().hp * kMusicChangeHpRate)
 	{
 		if (!m_isFinalStage)
 		{
